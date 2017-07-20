@@ -1,6 +1,6 @@
 #cloud-config
-hostname: apache_test1
-fqdn: apache_test1.nutanix.local
+hostname: appserver_test2
+fqdn: appserver_test2.nutanix.local
 
 write_files:
   - path: /etc/sysconfig/network-scripts/ifcfg-eth0
@@ -9,7 +9,7 @@ write_files:
      NAME="eth0"
      BOOTPROTO="none"
      PREFIX=24
-     IPADDR="10.21.28.85"
+     IPADDR="10.21.28.88"
      ONBOOT="yes"
      
   - path: /etc/resolve.conf
