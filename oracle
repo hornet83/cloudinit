@@ -40,6 +40,8 @@ yum_repos:
 
 runcmd:
   - [ systemctl, restart, network.service ]
+  - [ systemctl, stop, firewalld.service ]
+  - [ yum, "-y", remove, firewalld ]
   - [ yum, "-y", install, salt-minion ]
   - [ sed, -i, 's/#master: salt/master: saltmaster/g', /etc/salt/minion ]
   - [ systemctl, enable, salt-minion.service ]
