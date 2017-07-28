@@ -45,7 +45,6 @@ runcmd:
   - [ yum, "-y", install, salt-minion ]
   - [ sed, -i, 's/#master: salt/master: saltmaster/g', /etc/salt/minion ]
   - [ systemctl, enable, salt-minion.service ]
-  - [ systemctl, start, salt-minion.service ]
   - [ systemctl, disable, cloud-init.service ]
   - [ rm, -rf, /etc/ssh/ssh_host_* ]
   - [ sed, -i, 's/^PasswordAuthentication no/PasswordAuthentication yes/g', /etc/ssh/sshd_config ]
@@ -55,6 +54,5 @@ package_upgrade: true
 
 power_state:
   mode: reboot
-  message: Bye Bye
-  timeout: 30
+  timeout: 5
   condition: True
