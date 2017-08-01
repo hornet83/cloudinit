@@ -15,13 +15,13 @@ write_files:
   - path: /etc/resolve.conf
     content: |
      search nutanix.local
-     nameserver 10.21.28.80
-     nameserver 10.20.0.10
+     nameserver 10.21.53.80
+     nameserver 10.21.253.10
 
   - path: /etc/sysconfig/network
     content: |
      NETWORKING=yes
-     GATEWAY=10.21.28.1
+     GATEWAY=10.21.53.1
 
 yum_repos:
    # The name of the repository
