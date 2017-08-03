@@ -1,6 +1,18 @@
 #cloud-config
-hostname: servername 
+hostname: servername
 fqdn: servername.nutanix.local
+
+cloud_final_modules:
+  - rightscale_userdata
+  - scripts-per-once
+  - scripts-per-boot
+  - scripts-per-instance
+  - scripts-user
+  - ssh-authkey-fingerprints
+  - keys-to-console
+  - phone-home
+  - final-message
+  - power_state_change
 
 write_files:
   - path: /etc/sysconfig/network-scripts/ifcfg-eth0
@@ -8,20 +20,18 @@ write_files:
      DEVICE=eth0
      NAME="eth0"
      BOOTPROTO="none"
-     PREFIX=24
+     PREFIX=25
      IPADDR="ipaddress"
      ONBOOT="yes"
-     
-  - path: /etc/resolve.conf
-    content: |
-     search nutanix.local
-     nameserver 10.21.53.80
-     nameserver 10.21.253.10
-
   - path: /etc/sysconfig/network
     content: |
      NETWORKING=yes
      GATEWAY=10.21.53.1
+  - path: /etc/resolv.conf
+    content: |
+     search nutanix.local
+     nameserver 10.21.53.80
+     nameserver 10.21.253.10
 
 yum_repos:
    # The name of the repository
@@ -40,19 +50,28 @@ yum_repos:
 
 runcmd:
   - [ systemctl, restart, network.service ]
+  - [ systemctl, stop, firewalld.service ]
+  - [ yum, "-y", remove, firewalld ]
   - [ yum, "-y", install, salt-minion ]
   - [ sed, -i, 's/#master: salt/master: saltmaster/g', /etc/salt/minion ]
   - [ systemctl, enable, salt-minion.service ]
-  - [ systemctl, start, salt-minion.service ]
   - [ systemctl, disable, cloud-init.service ]
   - [ rm, -rf, /etc/ssh/ssh_host_* ]
   - [ sed, -i, 's/^PasswordAuthentication no/PasswordAuthentication yes/g', /etc/ssh/sshd_config ]
   - [ systemctl, restart, sshd.service ]
 
+manage-resolv-conf: true
+resolv_conf:
+   nameservers: ['10.21.53.80', '10.21.253.10']
+   searchdomains:
+     - nutanix.local
+   domain: nutanix.local
+
 package_upgrade: true
 
 power_state:
+  delay: "+1"
   mode: reboot
-  message: Bye Bye
-  timeout: 30
   condition: True
+  timeout: 10
+  message: Bye Bye
