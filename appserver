@@ -1,6 +1,6 @@
 #cloud-config
 hostname: servername
-fqdn: servername.nutanix.local
+fqdn: servername.domain
 
 cloud_final_modules:
   - rightscale_userdata
@@ -19,19 +19,7 @@ write_files:
     content: |
      DEVICE=eth0
      NAME="eth0"
-     BOOTPROTO="none"
-     PREFIX=25
-     IPADDR="ipaddress"
-     ONBOOT="yes"
-  - path: /etc/sysconfig/network
-    content: |
-     NETWORKING=yes
-     GATEWAY=10.21.53.1
-  - path: /etc/resolv.conf
-    content: |
-     search nutanix.local
-     nameserver 10.21.53.80
-     nameserver 10.21.253.10
+     BOOTPROTO="dhcp"
 
 yum_repos:
    # The name of the repository
@@ -59,13 +47,6 @@ runcmd:
   - [ rm, -rf, /etc/ssh/ssh_host_* ]
   - [ sed, -i, 's/^PasswordAuthentication no/PasswordAuthentication yes/g', /etc/ssh/sshd_config ]
   - [ systemctl, restart, sshd.service ]
-
-manage-resolv-conf: true
-resolv_conf:
-   nameservers: ['10.21.53.80', '10.21.253.10']
-   searchdomains:
-     - nutanix.local
-   domain: nutanix.local
 
 package_upgrade: true
 
