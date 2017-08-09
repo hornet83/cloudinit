@@ -36,6 +36,9 @@ yum_repos:
               https://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest/base/RPM-GPG-KEY-CentOS-7
       name: SaltStack repo for Red Hat Enterprise Linux $releasever
 
+bootcmd:
+  - echo "masterip saltmaster.domain saltmaster" >> /etc/hosts
+
 runcmd:
   - [ systemctl, restart, network.service ]
   - [ systemctl, stop, firewalld.service ]
